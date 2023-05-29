@@ -1,0 +1,6 @@
+
+
+let getHomePage = (req, res) =>{
+
+}
+
