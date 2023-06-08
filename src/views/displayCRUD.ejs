@@ -47,8 +47,8 @@
           <th>Image</th>
           <th>RoleId</th>
           <th>Position</th>
-          <th>CreatedAt</th>
-          <th>UpdatedAt</th>
+          <!-- <th>CreatedAt</th>
+          <th>UpdatedAt</th> -->
           <th>Actions</th>
         </tr>
         <tr>          
@@ -65,11 +65,11 @@
               <td><%= dataTable[i].image %></td>
               <td><%= dataTable[i].roleId %></td>
               <td><%= dataTable[i].positionId %></td>
-              <td><%= dataTable[i].createdAt %></td>
-              <td><%= dataTable[i].updatedAt %></td>
+              <!-- <td><%= dataTable[i].createdAt %></td>
+              <td><%= dataTable[i].updatedAt %></td> -->
               <td>
                 <a href="/edit-crud?id=<%= dataTable[i].id%>" class="btn-edit" type="button">Edit</a>
-                <a class="btn-delete " type="button">Delete</a>
+                <a href="/delete-crud?id=<%= dataTable[i].id%>" class="btn-delete " type="button">Delete</a>
               </td>
             </tr>
          <% } %>

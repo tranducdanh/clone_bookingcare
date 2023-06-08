@@ -48,7 +48,17 @@ let getEditCRUD = async (req, res) => {
 let putCRUD = async (req, res) => {
     let data = req.body;
     await CRUDService.updateUserData(data);
-    return res.redirect("/get-crud")
+    return res.redirect("/get-crud");
+};
+
+let deleteCRUD = async (req, res) => {
+    let id = req.query.id;
+    if (id) {
+        await CRUDService.deleteUserById(id);
+        return res.redirect("/get-crud");
+    } else {
+        return res.send("delete user failed");
+    }
 };
 
 module.exports = {
@@ -58,4 +68,5 @@ module.exports = {
     displayGetCRUD: displayGetCRUD,
     getEditCRUD: getEditCRUD,
     putCRUD: putCRUD,
+    deleteCRUD: deleteCRUD,
 };
