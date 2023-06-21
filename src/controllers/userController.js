@@ -66,18 +66,22 @@ let handleDeleteUser = async (req, res) => {
     return res.status(200).json(message);
 };
 
-let getAllCode =async (req, res)=>{
+let getAllCode = async (req, res) => {
     try {
-        let data = await userService.getAllCodeService(req.query.type)
+        // setTimeout(async()=>{
+        //     let data = await userService.getAllCodeService(req.query.type)
+        //     return res.status(200).json(data);
+        // },3000)
+        let data = await userService.getAllCodeService(req.query.type);
         return res.status(200).json(data);
     } catch (e) {
-        console.log('get all code error: ',e);
+        console.log('get all code error: ', e);
         return res.status(200).json({
             errCode: -1,
-            errMessage:'error all code from server !!!', 
+            errMessage: 'error all code from server !!!',
         });
     }
-}
+};
 
 module.exports = {
     handleLogin: handleLogin,
@@ -85,5 +89,5 @@ module.exports = {
     handleCreateNewUser: handleCreateNewUser,
     handleEditUser: handleEditUser,
     handleDeleteUser: handleDeleteUser,
-    getAllCode:getAllCode
+    getAllCode: getAllCode,
 };
