@@ -65,13 +65,19 @@ let saveInfoDoctor = (inputData) => {
                 !inputData.doctorId ||
                 !inputData.contentHTML ||
                 !inputData.contentMarkdown ||
-                !inputData.action
+                !inputData.action ||
+                !inputData.selectedPrice ||
+                !inputData.selectedPayment ||
+                !inputData.selectedProvince ||
+                !inputData.nameClinic ||
+                !inputData.addressClinic      
             ) {
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing parameter !!!',
                 });
             } else {
+                // upsert to markdown
                 if(inputData.action ==='CREATE') {
                     await db.Markdown.create({
                         contentHTML: inputData.contentHTML,
@@ -87,11 +93,40 @@ let saveInfoDoctor = (inputData) => {
                     if(doctor){
                         doctor.contentHTML= inputData.contentHTML
                         doctor.contentMarkdown= inputData.contentMarkdown
-                        doctor.description= inputData.description
-                        
+                        doctor.description= inputData.description                       
 
                         await doctor.save()
                     }
+                }
+
+                // upsert to doctor_infor
+                let doctorInfor = await db.Doctor_Infor.findOne({
+                    where:{doctorId: inputData.doctorId},
+                    raw: false,
+
+                }) 
+                if(doctorInfor){
+                    //update
+                    doctorInfor.doctorId= inputData.doctorId
+                    doctorInfor.priceId= inputData.selectedPrice
+                    doctorInfor.paymentId= inputData.selectedPayment
+                    doctorInfor.provinceId= inputData.selectedProvince                       
+                    doctorInfor.nameClinic= inputData.nameClinic                       
+                    doctorInfor.addressClinic = inputData.addressClinic                       
+                    doctorInfor.note= inputData.note                       
+
+                    await doctorInfor.save()
+                }else{
+                    //create
+                        await db.Doctor_Infor.create({
+                            doctorId:inputData.doctorId,
+                            priceId: inputData.selectedPrice,
+                            paymentId: inputData.selectedPayment,
+                            provinceId: inputData.selectedProvince ,                     
+                            nameClinic: inputData.nameClinic,                      
+                            addressClinic : inputData.addressClinic,                   
+                            note: inputData.note   
+                    });
                 }
                 
                 resolve({
@@ -183,16 +218,10 @@ let bulkCreateSchedule = (data)=>{
                     attributes:['date','timeType','doctorId','maxNumber'],
                     raw: true
                 })
-                //convert date
-                if(existing && existing.length > 0) {
-                    existing = existing.map(item =>{
-                        item.date = new Date(item.date).getTime()
-                        return item
-                    })
-                }
+                
                 //compare different
                 let toCreate = _.differenceWith(schedule, existing, (a,b)=>{
-                    return a.timeType === b.timeType && a.date === b.date
+                    return a.timeType === b.timeType && +a.date === +b.date
                 })
                 // console.log(toCreate);
 
@@ -225,7 +254,16 @@ let getScheduleByDate = (doctorId, date)=>{
                     where:{
                         doctorId:doctorId,
                         date:date
-                    }                    
+                    },
+                    include: [                        
+                        {
+                            model: db.Allcode,
+                            as: 'timeTypeData',
+                            attributes: ['valueEn', 'valueVi'],
+                        },
+                    ],
+                    raw: false,
+                    nest: true,                   
                 })
 
                 if(!data){
