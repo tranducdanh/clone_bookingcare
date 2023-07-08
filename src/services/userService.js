@@ -13,6 +13,7 @@ let handleUserLogin = (email, password) => {
                 let user = await db.User.findOne({
                     where: { email: email },
                     attributes: [
+                        'id',
                         'email',
                         'roleId',
                         'password',

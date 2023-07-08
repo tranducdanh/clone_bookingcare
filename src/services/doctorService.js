@@ -69,7 +69,7 @@ let checkRequiredFields = (inputData) => {
         'selectedProvince',
         'nameClinic',
         'addressClinic',
-        'specialtyId'
+        'specialtyId',
     ];
 
     let isValid = true;
@@ -457,49 +457,59 @@ let getProfileDoctorById = (doctorId) => {
     });
 };
 
-let getListPatientForDoctor = (doctorId, date)=>{
-    return new Promise( async (resolve, reject) => {
+let getListPatientForDoctor = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
         try {
             if (!doctorId || !date) {
                 resolve({
                     errCode: 1,
                     errMessage: ' Missing required parameters !!!',
                 });
-            }else{
+            } else {
                 let data = await db.Booking.findAll({
                     where: {
                         statusId: 'S2',
                         doctorId: doctorId,
-                        date: date
+                        date: date,
                     },
                     include: [
                         {
                             model: db.User,
-                            as: 'patientData',                 
-                            attributes: ['email', 'firstName', 'address', 'gender'],
+                            as: 'patientData',
+                            attributes: [
+                                'email',
+                                'firstName',
+                                'address',
+                                'gender',
+                            ],
                             include: [
                                 {
                                     model: db.Allcode,
-                                    as: 'genderData',                 
+                                    as: 'genderData',
                                     attributes: ['valueVi', 'valueEn'],
                                 },
                             ],
                         },
+                        {
+                            model: db.Allcode,
+                            as: 'timeTypeDataPatient',
+                            attributes: ['valueVi', 'valueEn'],
+                        },
                     ],
                     raw: false,
-                    nest: true
-                })
+                    nest: true,
+                });
 
                 resolve({
                     errCode: 0,
-                    data: data
-                })
+                    data: data,
+                });
             }
         } catch (e) {
             reject(e);
         }
-    })
-}
+    });
+};
 
 module.exports = {
     getTopDoctorHomeService,
@@ -510,5 +520,5 @@ module.exports = {
     getScheduleByDate,
     getExtraInforDoctorById,
     getProfileDoctorById,
-    getListPatientForDoctor
+    getListPatientForDoctor,
 };
